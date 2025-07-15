@@ -1,0 +1,37 @@
+# Byte-code files
+__pycache__/
+*.pyc
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+.venv/
+env/
+*.env
+
+# Distribution / build
+build/
+dist/
+*.egg-info/
+*.egg
+
+# IDE and Editor specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs and temporary files
+*.log
+*.tmp
+tmp/
+
+# Operating System files
+.DS_Store
+Thumbs.db
