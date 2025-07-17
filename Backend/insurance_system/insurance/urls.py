@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
 from django.urls import path
-from .views import send_customer_sms
+from .views import send_customer_sms,CustomTokenObtainPairView
 from .views import ExpiringPoliciesView, send_expiry_sms, send_customer_sms
 
 router = DefaultRouter()
@@ -18,5 +18,7 @@ urlpatterns = [
     path('expiring-policies/', ExpiringPoliciesView.as_view()),
     path('send-expiry-sms/<int:days>/', send_expiry_sms),
     path('send-sms/<int:policy_id>/', send_customer_sms.as_view()),
+    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+
 ]
 

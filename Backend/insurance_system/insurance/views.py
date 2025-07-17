@@ -5,7 +5,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Company, User, Customer, InsurancePolicy
 from .serializers import (
     CompanySerializer,
@@ -13,7 +13,8 @@ from .serializers import (
     CustomerSerializer,
     InsurancePolicySerializer,
     PolicySerializer,
-    RegisterSerializer
+    RegisterSerializer,
+    CustomTokenObtainPairSerializer
 )
 from utils.sms import send_sms
 
@@ -141,8 +142,8 @@ class InsurancePolicyViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
-    return Response({
-        'id': request.user.id,
-        'username': request.user.username,
-        'is_superuser': request.user.is_superuser
-    })
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

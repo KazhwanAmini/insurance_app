@@ -1,10 +1,9 @@
-// src/components/CompanyList.js
 import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../api'
 import './CompanyList.css'
-import { DateObject } from 'react-multi-date-picker';
-import persian from 'react-date-object/calendars/persian';
+import { DateObject } from 'react-multi-date-picker'
+import persian from 'react-date-object/calendars/persian'
 
 const fetchCompanies = async () => {
   const { data } = await api.get('/companies/')
@@ -19,6 +18,7 @@ function CompanyList() {
     address: '',
     phone_number: '',
     service_expiration: '',
+    status: 'pending', // 👈 default status
   })
 
   const { data, error, isLoading } = useQuery({
@@ -46,6 +46,7 @@ function CompanyList() {
       address: company.address,
       phone_number: company.phone_number,
       service_expiration: company.service_expiration,
+      status: company.status,
     })
   }
 
@@ -69,12 +70,12 @@ function CompanyList() {
     (a, b) => new Date(a.service_expiration) - new Date(b.service_expiration)
   )
 
-  if (isLoading) return <p>Loading companies...</p>
-  if (error) return <p>Error loading companies.</p>
+  if (isLoading) return <p>در حال بارگذاری شرکت‌ها...</p>
+  if (error) return <p>خطا در بارگذاری شرکت‌ها.</p>
 
   return (
     <div className="company-container">
-      <h2 className="page-title">لیست شرکت ها</h2>
+      <h2 className="page-title">لیست شرکت‌ها</h2>
       {sortedCompanies.length === 0 ? (
         <p style={{ textAlign: 'center' }}>هیچ شرکتی یافت نشد</p>
       ) : (
@@ -85,6 +86,7 @@ function CompanyList() {
               <th>شماره تلفن</th>
               <th>آدرس</th>
               <th>انقضا</th>
+              <th>وضعیت</th>
               <th>عملیات</th>
             </tr>
           </thead>
@@ -96,7 +98,30 @@ function CompanyList() {
                   <td>{company.name}</td>
                   <td>{company.phone_number}</td>
                   <td>{company.address}</td>
-                  <td>{company.service_expiration ? new DateObject(company.service_expiration).convert(persian).format("YYYY/MM/DD") : '-'}</td>
+                  <td>
+                    {company.service_expiration
+                      ? new DateObject(company.service_expiration).convert(persian).format('YYYY/MM/DD')
+                      : '-'}
+                  </td>
+                  <td>
+                    <span
+                      style={{
+                        color:
+                          company.status === 'active'
+                            ? 'green'
+                            : company.status === 'pending'
+                            ? 'orange'
+                            : 'red',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {company.status === 'active'
+                        ? 'فعال'
+                        : company.status === 'pending'
+                        ? 'در انتظار'
+                        : 'غیرفعال'}
+                    </span>
+                  </td>
                   <td>
                     <button onClick={() => handleEditClick(company)}>ویرایش</button>
                     <button
@@ -137,9 +162,8 @@ function CompanyList() {
                     required
                   />
                 </div>
-                
               </div>
-              <div>
+              <div className="form-grid">
                 <div>
                   <label>انقضای خدمات</label>
                   <input
@@ -150,6 +174,21 @@ function CompanyList() {
                     required
                   />
                 </div>
+                <div>
+                  <label>وضعیت</label>
+                  <select
+                    name="status"
+                    value={form.status}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="pending">در انتظار</option>
+                    <option value="active">فعال</option>
+                    <option value="deactivated">غیرفعال</option>
+                  </select>
+                </div>
+              </div>
+              <div>
                 <label>آدرس</label>
                 <input
                   name="address"

@@ -38,6 +38,12 @@ const resources = {
       home:'خانه',
       signup:'ساخت حساب',
       login:'ورود به حساب',
+      home: "خانه",
+      customers: "مشتریان",
+      expiring_policies: "بیمه‌های در حال انقضا",
+      signup: "ثبت‌نام",
+      login: "ورود",
+      logout: "خروج",
       // ...other keysذ
     }
   }

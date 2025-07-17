@@ -19,10 +19,24 @@ const Login = () => {
       localStorage.setItem('access', res.data.access)
       localStorage.setItem('refresh', res.data.refresh)
 
+      const userData = res.data.user
+      const companyStatus = userData?.company?.status || 'unknown'
+      const companyName = userData?.company?.name || ''
+
+      localStorage.setItem('company_status', companyStatus)
+      localStorage.setItem('company_name', companyName)
       const userRes = await api.get('me/')
       const isSuperuser = userRes.data.is_superuser
 
-      navigate(isSuperuser ? '/companies' : '/customers')
+      //navigate(isSuperuser ? '/companies' : '/customers')
+      // Navigate conditionally
+      if (userData.is_superuser) {
+        navigate('/companies')
+      } else if (companyStatus === 'active') {
+        navigate('/customers')
+      } else {
+        navigate('/')  // Redirect to home for "pending" or unknown
+      }
     } catch (err) {
       alert('Invalid credentials')
     }

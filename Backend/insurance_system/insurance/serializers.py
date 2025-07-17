@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Company, User, Customer, InsurancePolicy
 from datetime import date, timedelta
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class PolicySerializer(serializers.ModelSerializer):
     customer_name = serializers.CharField(source='customer.full_name', read_only=True)
@@ -32,13 +33,14 @@ class RegisterSerializer(serializers.Serializer):
         )
         return user
         
-
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = '__all__'
+        fields = ['id', 'name', 'address', 'phone_number', 'service_expiration', 'status']  # 👈 Add 'status'
+
 class UserSerializer(serializers.ModelSerializer):
     is_superuser = serializers.SerializerMethodField()
+    company = CompanySerializer(read_only=True)
 
     class Meta:
         model = User
@@ -59,3 +61,27 @@ class InsurancePolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = InsurancePolicy
         fields = '__all__'
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        user = self.user
+        company = getattr(user, 'company', None)
+
+        data['user'] = {
+            'id': user.id,
+            'username': user.username,
+            'is_superuser': user.is_superuser,
+            'company': {
+                'id': company.id,
+                'name': company.name,
+                'status': company.status,
+                'service_expiration': company.service_expiration,
+                'phone_number': company.phone_number,
+            } if company else None
+        }
+
+        return data
+

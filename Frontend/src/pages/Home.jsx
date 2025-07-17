@@ -1,8 +1,32 @@
 // src/pages/Home.js
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './Home.css'
-
 const Home = () => {
+const [companyStatus, setCompanyStatus] = useState(null)
+
+  useEffect(() => {
+    const status = localStorage.getItem('company_status')
+    setCompanyStatus(status)
+  }, [])
+
+  if (companyStatus === 'pending') {
+    return (
+      <div style={{ padding: '2rem', color: 'orange', textAlign: 'center' }}>
+        <h2>شرکت شما در انتظار تایید مدیریت است</h2>
+        <p>لطفاً منتظر بمانید تا دسترسی شما فعال شود.</p>
+      </div>
+    )
+  }
+
+  if (companyStatus === 'deactivated') {
+    return (
+      <div style={{ padding: '2rem', color: 'red', textAlign: 'center' }}>
+        <h2>دسترسی شرکت شما غیرفعال شده است</h2>
+        <p>برای فعال‌سازی لطفاً با مدیریت تماس بگیرید.</p>
+      </div>
+    )
+  }
+  
   return (
     <div className="pro-home-container">
       <div className="pro-home-card">

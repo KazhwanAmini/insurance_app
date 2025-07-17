@@ -2,15 +2,20 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class Company(models.Model):
-    custom_sms_provider = models.BooleanField(default=False ,null=True)
-    sms_address = models.CharField(null=True)
-    sms_token = models.CharField(null=True)
-    sms_user = models.CharField(null=True)
-    sms_password = models.CharField(null=True)
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('active', 'Active'),
+        ('deactivated', 'Deactivated'),
+    ]
+
     name = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
+    address = models.TextField()
     phone_number = models.CharField(max_length=20)
-    service_expiration = models.DateField()
+    service_expiration = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')  # 👈 Add this line
+
+    def __str__(self):
+        return self.name
 
 class User(AbstractUser):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
