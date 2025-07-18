@@ -44,6 +44,11 @@ const resources = {
       signup: "ثبت‌نام",
       login: "ورود",
       logout: "خروج",
+      send_single_sms:"ارسال پیامک تکی",
+      send_sms_for_this_policy:"آیا پیامک ارسال گردد؟",
+      failed_to_send_sms:"خطا در اسال پیامک",
+      sms_sent:"پیامک ارسال شد",      
+
       // ...other keysذ
     }
   }

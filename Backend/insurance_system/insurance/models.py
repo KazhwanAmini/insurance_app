@@ -13,9 +13,16 @@ class Company(models.Model):
     phone_number = models.CharField(max_length=20)
     service_expiration = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')  # 👈 Add this line
+    sms_credit = models.PositiveIntegerField(default=100000)
 
     def __str__(self):
         return self.name
+
+class SMSLog(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    recipient = models.CharField(max_length=20)
+    message = models.TextField()
+    sent_at = models.DateTimeField(auto_now_add=True)
 
 class User(AbstractUser):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)

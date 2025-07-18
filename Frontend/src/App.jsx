@@ -12,6 +12,7 @@
   import NewPolicy from './pages/NewPolicy';
   import PolicyListPage from './pages/PolicyListPage'
   import ExpiringPoliciesPage from './pages/ExpiringPoliciesPage';
+  import CompanyProfilePage from './pages/CompanyProfilePage';
 
   function App() {
     return (
@@ -28,6 +29,7 @@
           <Route path="/add-policy" element={<NewPolicy />} />
           <Route path="/policies/:id" element={<PolicyListPage />} />
            <Route path="/expiring-policies" element={<ExpiringPoliciesPage />} />
+           <Route path="/company-profile" element={<CompanyProfilePage />} />
         </Routes>
       </Router>
     );

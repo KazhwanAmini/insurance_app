@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Company, User, Customer, InsurancePolicy
+from .models import Company, User, Customer, InsurancePolicy, SMSLog
 from datetime import date, timedelta
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -36,7 +36,13 @@ class RegisterSerializer(serializers.Serializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['id', 'name', 'address', 'phone_number', 'service_expiration', 'status']  # 👈 Add 'status'
+        fields = ['id', 'name', 'address', 'phone_number', 'service_expiration', 'status', 'sms_credit']  # 👈 Add 'status'
+
+
+class SMSLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SMSLog
+        fields = '__all__'
 
 class UserSerializer(serializers.ModelSerializer):
     is_superuser = serializers.SerializerMethodField()

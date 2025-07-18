@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+import os
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import GenericAPIView
@@ -6,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import Company, User, Customer, InsurancePolicy
+from .models import Company, User, Customer, InsurancePolicy,SMSLog
 from .serializers import (
     CompanySerializer,
     UserSerializer,
@@ -14,9 +15,10 @@ from .serializers import (
     InsurancePolicySerializer,
     PolicySerializer,
     RegisterSerializer,
-    CustomTokenObtainPairSerializer
+    CustomTokenObtainPairSerializer,
+    SMSLogSerializer
 )
-from utils.sms import send_sms
+from utils.sms import convert_to_persian, send_sms
 
 
 # ✅ Get only expiring policies for logged-in user's company
@@ -52,8 +54,13 @@ def send_expiry_sms(request, days):
 
     for policy in policies:
         customer = policy.customer
-        message = f"{user_company.name} - {customer.full_name} عزیز، بیمه {policy.policy_type} شما در تاریخ {policy.end_date} منقضی می‌شود. لطفا برای تمدید اقدام کنید."
-        send_sms(customer.phone, message)
+        policy_type = os.getenv(policy.policy_type)
+        persian_date = convert_to_persian(policy.end_date)
+        company = customer.company
+
+        message = f"{user_company.name} - {customer.full_name} عزیز، بیمه {policy_type} شما در تاریخ {persian_date} منقضی می‌شود. لطفا برای تمدید اقدام کنید.\n{company.name}\n{company.phone_number}"
+       
+        send_sms(customer.phone, message,policy.company)
 
     return Response({'status': 'ok', 'count': policies.count()})
 
@@ -65,11 +72,13 @@ class send_customer_sms(APIView):
     def post(self, request, policy_id):
         try:
             policy = InsurancePolicy.objects.get(id=policy_id)
+            policy_type = os.getenv(policy.policy_type)
+            persian_date = convert_to_persian(policy.end_date)
             customer = policy.customer
             company = customer.company
             phone = customer.phone
-            message = f"{customer.full_name} عزیز، بیمه‌نامه {policy.policy_type} شما متعلق به شرکت {company.name} در تاریخ {policy.end_date} منقضی می‌شود. لطفاً برای تمدید اقدام کنید."
-            result = send_sms(phone, message)
+            message = f"{customer.full_name} عزیز، بیمه‌نامه {policy_type} شما در تاریخ {persian_date} منقضی می‌شود. لطفاً برای تمدید اقدام کنید. \n{company.name}\n{company.phone_number}"
+            result = send_sms(phone, message,customer.company)
             return Response({"status": "sent", "result": result}, status=status.HTTP_200_OK)
         except InsurancePolicy.DoesNotExist:
             return Response({"error": "Policy not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -147,3 +156,24 @@ def get_user_info(request):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+
+    
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def company_profile(request):
+    company = request.user.company
+    if request.method == 'GET':
+        return Response(CompanySerializer(company).data)
+    elif request.method == 'PUT':
+        serializer = CompanySerializer(company, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def sms_logs(request):
+    company = request.user.company
+    logs = SMSLog.objects.filter(company=company).order_by('-sent_at')
+    return Response(SMSLogSerializer(logs, many=True).data)

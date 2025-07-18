@@ -162,17 +162,17 @@ export default function PolicyListPage() {
 
 
   const handleSendSMS = async (policyId) => {
-  const confirmed = window.confirm("Send SMS for this policy?");
-  if (!confirmed) return;
+    const confirmed = window.confirm(t('send_sms_for_this_policy'));
+    if (!confirmed) return;
 
-  try {
-    await api.post(`/send-sms/${policyId}/`);
-    alert("SMS sent!");
-  } catch (error) {
-    console.error(error);
-    alert("Failed to send SMS");
-  }
-};
+    try {
+      await api.post(`/send-sms/${policyId}/`);
+      alert(t('sms_sent'));
+    } catch (error) {
+      console.error(error);
+      alert(t('failed_to_send_sms'));
+    }
+  };
 
 
 
@@ -219,7 +219,7 @@ export default function PolicyListPage() {
                     {t('delete')}
                   </button>
                   <button className='sms-btn' onClick={() => handleSendSMS(policy.id)}>
-                    📩 Send SMS
+                    📩 {t('send_single_sms')}
                   </button>
                 </td>
               </tr>

@@ -18,14 +18,8 @@ export default function ExpiringPoliciesPage() {
   });
 
   const sendSMS = async (policy) => {
-    const message = prompt(
-      `پیام برای ${policy.customer_name}:`,
-      `${policy.customer_name} عزیز، بیمه‌نامه ${policy.policy_type} شما از شرکت ${policy.company_name} در تاریخ ${policy.end_date} منقضی می‌شود. لطفا برای تمدید اقدام کنید.`
-    );
-    if (!message) return;
-
     try {
-      await api.post(`/send-sms/${policy.id}/`, { message });
+      await api.post(`/send-sms/${policy.id}/`);
       alert('پیامک با موفقیت ارسال شد!');
     } catch {
       alert('ارسال پیامک با خطا مواجه شد.');
