@@ -13,6 +13,9 @@
   import PolicyListPage from './pages/PolicyListPage'
   import ExpiringPoliciesPage from './pages/ExpiringPoliciesPage';
   import CompanyProfilePage from './pages/CompanyProfilePage';
+  import CompanySMSLogPage from './pages/CompanySMSLogPage'
+  import VerifyCreditRequests from './pages/VerifyCreditRequests'
+  import CreditTopUpPage from './pages/CreditTopUpPage'
 
   function App() {
     return (
@@ -30,6 +33,9 @@
           <Route path="/policies/:id" element={<PolicyListPage />} />
            <Route path="/expiring-policies" element={<ExpiringPoliciesPage />} />
            <Route path="/company-profile" element={<CompanyProfilePage />} />
+           <Route path="/company/sms-log" element={<CompanySMSLogPage />} />
+           <Route path="/credit-topup" element={<CreditTopUpPage />} />
+          <Route path="/verify-topups" element={<VerifyCreditRequests />} />      
         </Routes>
       </Router>
     );

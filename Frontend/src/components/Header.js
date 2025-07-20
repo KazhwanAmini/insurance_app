@@ -37,34 +37,41 @@ const Header = () => {
   }
 
   return (
-    <header className="pro-header">
-      <div className="pro-header-left">
-        {token && companyStatus == 'active' && (
-          <div className="dropdown">
-            <button className="dropdown-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-              🏢 {companyName} ▾
-            </button>
-            {menuOpen && (
-              <div className="dropdown-menu">
-                <Link to="/" onClick={() => setMenuOpen(false)}>{t('home')}</Link>
-                <Link to="/customers" onClick={() => setMenuOpen(false)}>{t('customers')}</Link>
-                <Link to="/expiring-policies" onClick={() => setMenuOpen(false)}>{t('expiring_policies')}</Link>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+<header className="pro-header">
+  <div className="pro-header-left">
+    {token && companyStatus === 'active' && (
+      <button className="hamburger-icon" onClick={() => setMenuOpen(!menuOpen)}>
+        ☰
+      </button>
+    )}
+  </div>
 
-      <nav className="pro-nav">
-        {!token && <Link to="/register">{t('signup')}</Link>}
-        {!token && <Link to="/login">{t('login')}</Link>}
-        {token && (
-          <button className="logout-btn" onClick={handleLogout}>
-            {t('logout')}
-          </button>
-        )}
-      </nav>
-    </header>
+  <div className="pro-header-center">
+    {token && companyStatus === 'active' && (
+      <span className="pro-company-name">{companyName}</span>
+    )}
+  </div>
+
+  <nav className="pro-nav">
+    {!token && <Link to="/register">{t('signup')}</Link>}
+    {!token && <Link to="/login">{t('login')}</Link>}
+    {token && (
+      <button className="logout-btn" onClick={handleLogout}>
+        {t('logout')}
+      </button>
+    )}
+  </nav>
+
+  {menuOpen && (
+    <div className="dropdown-menu">
+      <Link to="/" onClick={() => setMenuOpen(false)}>{t('home')}</Link>
+      <Link to="/customers" onClick={() => setMenuOpen(false)}>{t('customers')}</Link>
+      <Link to="/expiring-policies" onClick={() => setMenuOpen(false)}>{t('expiring_policies')}</Link>
+      <Link to="/company-profile" onClick={() => setMenuOpen(false)}>{t('profile')}</Link>
+      <Link to="/company/sms-log">گزارش پیامک‌ها</Link>
+    </div>
+  )}
+</header>
   )
 }
 

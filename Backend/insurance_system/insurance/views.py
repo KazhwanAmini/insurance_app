@@ -1,13 +1,13 @@
 from datetime import date, timedelta
 import os
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets,generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import Company, User, Customer, InsurancePolicy,SMSLog
+from .models import Company, User, Customer, InsurancePolicy,SMSLog, CreditTopUpRequest
 from .serializers import (
     CompanySerializer,
     UserSerializer,
@@ -16,7 +16,8 @@ from .serializers import (
     PolicySerializer,
     RegisterSerializer,
     CustomTokenObtainPairSerializer,
-    SMSLogSerializer
+    SMSLogSerializer,
+    CreditTopUpSerializer
 )
 from utils.sms import convert_to_persian, send_sms
 
@@ -82,6 +83,8 @@ class send_customer_sms(APIView):
             return Response({"status": "sent", "result": result}, status=status.HTTP_200_OK)
         except InsurancePolicy.DoesNotExist:
             return Response({"error": "Policy not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
 
 
 # ✅ Register endpoint
@@ -177,3 +180,28 @@ def sms_logs(request):
     company = request.user.company
     logs = SMSLog.objects.filter(company=company).order_by('-sent_at')
     return Response(SMSLogSerializer(logs, many=True).data)
+
+
+
+class CreditTopUpCreateView(generics.CreateAPIView):
+    queryset = CreditTopUpRequest.objects.all()
+    serializer_class = CreditTopUpSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(company=self.request.user.company)
+
+class CreditTopUpListView(generics.ListAPIView):
+    queryset = CreditTopUpRequest.objects.all()
+    serializer_class = CreditTopUpSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+class CreditTopUpVerifyView(generics.UpdateAPIView):
+    queryset = CreditTopUpRequest.objects.all()
+    serializer_class = CreditTopUpSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def perform_update(self, serializer):
+        instance = serializer.save(is_verified=True)
+        instance.company.sms_credit += instance.amount
+        instance.company.save()

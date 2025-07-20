@@ -18,6 +18,16 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
+class CreditTopUpRequest(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    card_last4 = models.CharField(max_length=4)
+    amount = models.PositiveIntegerField()
+    tracking_code = models.CharField(max_length=100)
+    payment_date = models.DateField()
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+
 class SMSLog(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     recipient = models.CharField(max_length=20)

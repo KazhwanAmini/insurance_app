@@ -1,0 +1,51 @@
+.sms-log-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sms-log-container h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.sms-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.sms-log-table th,
+.sms-log-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: right;
+  direction: rtl;
+  font-size: 14px;
+}
+
+.sms-log-table th {
+  background-color: #f7f7f7;
+  font-weight: bold;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .sms-log-container {
+    padding: 20px;
+  }
+
+  .sms-log-table th,
+  .sms-log-table td {
+    font-size: 13px;
+    padding: 8px;
+  }
+}
